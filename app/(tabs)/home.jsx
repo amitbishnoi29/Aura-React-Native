@@ -5,14 +5,18 @@ import { FlatList, Image, RefreshControl, Text, View } from "react-native";
 import { images } from "../../constants";
 import useAppwrite from "../../lib/useAppwrite";
 import { getAllPosts, getLatestPosts } from "../../lib/appwrite";
-import { EmptyState, SearchInput, Trending, VideoCard } from "../../components";
+import {
+  EmptyState,
+  Loader,
+  SearchInput,
+  Trending,
+  VideoCard,
+} from "../../components";
 
 const Home = () => {
-  const { data: posts, refetch } = useAppwrite(getAllPosts);
-  const { data: latestPosts } = useAppwrite(getLatestPosts);
-
+  const { data: posts, refetch, loading } = useAppwrite(getAllPosts);
+  const { data: latestPosts, loading: Loading } = useAppwrite(getLatestPosts);
   const [refreshing, setRefreshing] = useState(false);
-
   const onRefresh = async () => {
     setRefreshing(true);
     await refetch();
@@ -24,7 +28,11 @@ const Home = () => {
   // and horizontal flatlist
 
   //  we cannot do that with just scrollview as there's both horizontal and vertical scroll (two flat lists, within trending)
-
+  if (loading || Loading) {
+    // if (true) {
+    return <Loader isLoading={Loading || loading} />;
+    // return <SkeletonLoader />;
+  }
   return (
     <SafeAreaView className="bg-primary">
       <FlatList
